@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>Siddharth Sheth - Insertion Sort</title>
+  
+  <!-- CSS class below -->  
+  <style>
+	*{
+		font-family: arial;  
+	}
+	
+	.sections {
+		margin-top: 5px; 
+	}
+	.arrayContainer {
+		display: flex;
+	}
+	
+	.arrayList {
+	 display: inline-block;
+	 width: 700px;
+	}
+	li {
+		margin-bottom: 15px;
+	}
+	
+	#realData {
+		margin-top: 15px;
+		
+	}
+	
+	.performSort {
+		margin-top: 20px;
+	}
+
+  </style>
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+</head>
+<body>
+<!-- partial:index.partial.html -->
+<h4>Insertion sort</h4>
+<!-- User Input to genearte # of rows of the Synthetic dataset -->
+<label for="synthethicNums">How many Rows you want to generate? </label>
+<input type="number" id="synthethicNums" />
+
+<div>
+<label for="fader">Degree of sortedness</label>
+<input type="range" min="0" max="100" value="50" id="fader" 
+	step="1" oninput="outputUpdate(value)">
+<output for="fader" id="volume">50</output>
+
+</div>
+
+<!-- Button to generate and sort Numbers dataset -->
+<input type="button" value="Generate Synthetic Numbers Dataset & Perform Insertion Sort" onclick="syntheticDataGenerator()" />
+<!-- Button to generate and sort String dataset -->
+<input type="button" value="Generate Synthetic String Dataset & Perform Insertion Sort" onclick="syntheticDataString()" />
+
+<!-- Button to fetch rea-time data from pre-defined URL and then performing sorting on the dataset  -->
+<div id="realData">
+	<input type="button" value="Fetch Real-time Data for Sorting & Perform Sorting - Dataset 1" onclick="fetchRealData1()" />
+	<input type="button" value="Fetch Real-time Data for Sorting & Perform Sorting - Dataset 2" onclick="fetchRealData2()" />
+</div>
+
+<br />
+<div>
+<p id="apiDesc"></p>
+</div>
+
+<!-- Displaying Run-time and Memory consumption for the Sorting -->
+<div class="sections">
+  <summary>
+	<div>Time taken: <output id="ms"></output></div>
+	<div>Memory used: <output id="mb"></output></div>
+  
+  </summary>
+ 
+</div>
+
+<div class="arrayContainer">
+	<!-- Displaying Original (Un-sorted) Dataset -->
+	<div class="sections arrayList">
+		<div>
+			<summary>Original array: </summary>
+			<ul id="defaultArray">
+    
+			</ul>
+		</div>
+	</div>
+	<!-- Displaying Result (Sorted) Dataset -->
+	<div class="sections arrayList">
+		<div>
+			<summary>Sorted array: </summary>
+			<ul id="sortedArray">
+			</ul>
+		</div>
+	</div>
+</div>
+
+
+
+
+
+<!-- partial -->
+<script>
+  <!-- Initializing Dataset as nul, generatedData field to track after inserting numbers of rows whether any sorting method (synthetic/ real) is selected -->
+  let list = [], generatedData = false, showSortedness = false;
+  let numOfSortedElements;
+	/* Just rendering function based on Array type, for real-time data - data type is 'Object' and for synthetic data - data type is 'Array'  */
+	function renderArray(elementId, array){
+		if (array && array.length) {
+			document.getElementById(elementId).innerHTML = '';
+		}
+		var ul = document.getElementById(elementId);
+	
+		for(let i=0; i < array.length; i++){
+			if (typeof(array[i]) === 'object') {
+				// document.getElementById(elementId).appendChild(`<li>${JSON.stringify(array[i])}</li>`);
+				let li = document.createElement("li");
+				li.appendChild(document.createTextNode(`${JSON.stringify(array[i])}`));
+				ul.appendChild(li);
+		}
+			else {
+				// document.getElementById(elementId).appendChild(`<li>${array[i]}</li>`);
+				let li = document.createElement("li");
+				li.appendChild(document.createTextNode(`${array[i]}`));
+				ul.appendChild(li);
+			}
+      
+  }
+}
+
+function outputUpdate(vol) {
+	document.querySelector('#volume').value = vol;
+}
+
+<!-- Function to Generate Synthetic Data-set of Numbers -->	
+  function syntheticDataGenerator() {
+	<!-- Initilizing list as empty to make it empty for the Fresh run -->	
+	list = [];
+	let nums = parseInt(document.getElementById("synthethicNums").value);
+	for(let i = 0; i < nums; i++){
+		//list.push(i);
+		list.push(Math.floor(Math.random() * (nums - 1) + 1));
+		
+	}
+	const sortedNess = document.querySelector('#volume').value;
+	
+	if (sortedNess > 0) {
+		numOfSortedElements = Math.floor((nums/100)*sortedNess);
+		showSortedness = true;
+	}
+	// console.log(list);
+	<!-- To Display Original Array -->	
+	renderArray("defaultArray", list);
+	<!-- Changing variable value as Data is generated and good to go for Sorting -->	
+	generatedData = true;
+	<!-- Caling Sorting Function -->	
+	performSorting(false, null);
+  }
+
+<!-- Function to Generate Synthetic Data-set of String data-type -->	
+function syntheticDataString() {
+	<!-- Initilizing list as empty to make it empty for the Fresh run -->
+	list = [];
+	let nums = parseInt(document.getElementById("synthethicNums").value);
+	for(let i = 0; i < nums; i++){
+		list.push(Math.random().toString(36).substring(7));
+		
+	}
+	
+	const sortedNess = document.querySelector('#volume').value;
+	
+	if (sortedNess > 0) {
+		numOfSortedElements = Math.floor((nums/100)*sortedNess);
+		showSortedness = true;
+	}
+	// console.log(list);
+	<!-- To Display Original Array -->	
+	renderArray("defaultArray", list);
+	<!-- Changing variable value as Data is generated and good to go for Sorting -->	
+	generatedData = true;
+	<!-- Caling Sorting Function -->	
+	performSorting(false, null);
+}
+  
+<!-- Function to Fetch real-time Data-set 1 -->	
+  function fetchRealData1() {
+	
+  
+	<!-- Initilizing list as empty to make it empty for the Fresh run -->
+	list = [];
+	let nums = parseInt(document.getElementById("synthethicNums").value);
+	let url = 'https://soda.demo.socrata.com/resource/4tka-6guv.json?$where=number_of_stations%20%3E%201&$select=number_of_stations,region&$limit='+nums; 
+	
+	document.querySelector("#apiDesc").innerHTML = "<span> For Dataset #1, we are calling <a href='"+ url +"'>API</a> to fetch data related to earthquake and finding number of stations impacted and sorting them using insertion sort. </span>";
+	
+	fetch(url)
+		.then(response => response.json())
+		.then(function(data) {data.forEach(function(inputArray) {
+			list.push({
+				//region: inputArray.region,
+				number_of_stations: parseInt(inputArray.number_of_stations || 0)
+			})
+		});
+	
+	const sortedNess = document.querySelector('#volume').value;
+	if (sortedNess > 0) {
+		numOfSortedElements = Math.floor((nums/100)*sortedNess);
+		showSortedness = true;
+	}
+	<!-- Changing variable value as Data is generated and good to go for Sorting -->
+		generatedData = true;
+	<!-- To Display Original Array -->	
+		renderArray("defaultArray", list);
+	<!-- Caling Sorting Function -->
+		performSorting(true, 'number_of_stations');
+	});
+  }
+
+<!-- Function to Fetch real-time Data-set 1 -->	
+function fetchRealData2() {
+	<!-- Initilizing list as empty to make it empty for the Fresh run -->
+	list = [];
+	let nums = parseInt(document.getElementById("synthethicNums").value);
+	let url2 = 'https://data.wa.gov/resource/9nnw-c693.json?$select=report_number,filer_name&$limit='+nums;
+	
+	document.querySelector("#apiDesc").innerHTML = "<span> For Dataset #2, we are calling <a href='"+ url2 +"'>API</a> to fetch data related to WA state lobbyist compensation  cases and finding report number and sorting them using insertion sort. </span>";
+	
+	<!-- Fetching Data from pre-defined URL -->
+	fetch(url2)
+  .then(response => response.json())
+  .then(function(data) {data.forEach(function(inputArray) {
+			list.push({
+				//filer_name: inputArray.filer_name,
+				report_number: parseInt(inputArray.report_number || 0)
+			})
+		});
+		let nums = list.length;
+		const sortedNess = document.querySelector('#volume').value;
+	
+	if (sortedNess > 0) {
+		numOfSortedElements = Math.floor((nums/100)*sortedNess);
+		showSortedness = true;
+	}
+	<!-- Changing variable value as Data is generated and good to go for Sorting -->
+		generatedData = true;
+	<!-- To Display Original Array -->
+		renderArray("defaultArray", list);
+	<!-- Caling Sorting Function -->
+		performSorting(true, 'report_number');
+	});
+  }
+
+
+
+<!-- Performing Insertion Sort-->
+function insertion(inputArr, isRealTime, sortLabel){
+<!-- Getting the length of the data-set -->
+  let length = inputArr.length;
+  
+  if (isRealTime) {
+		for (let i = 1; i < length; i++) {
+        let key = inputArr[i][sortLabel];
+        let j = i - 1;
+        while (j >= 0 && inputArr[j][sortLabel] > key) {
+            inputArr[j + 1][sortLabel] = inputArr[j][sortLabel];
+            j = j - 1;
+        }
+        inputArr[j + 1][sortLabel] = key;
+    }
+	
+	}
+	else {
+    for (let i = 1; i < length; i++) {
+        let key = inputArr[i];
+        let j = i - 1;
+        while (j >= 0 && inputArr[j] > key) {
+            inputArr[j + 1] = inputArr[j];
+            j = j - 1;
+        }
+        inputArr[j + 1] = key;
+    }
+    
+	}  
+    return inputArr;
+};
+
+
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+}
+
+
+  <!-- Function to check whether User seleted any Sorting method  -->  
+function performSorting(isRealTime, sortLabel) {
+if (!generatedData) {
+	console.log("Please tell which dataset you would like to perform sorting on... ");
+	return false;
+}
+
+ <!-- To get Run-time and Memory Consumption details -->  
+let startSorting = window.performance.now();
+let newSortedList = insertion(list, isRealTime, sortLabel);
+let endSorting = window.performance.now();
+
+if (showSortedness) {
+	let arrayToShuffule = newSortedList.splice(numOfSortedElements);
+	shuffleArray(arrayToShuffule);
+	let newArrayToSort = newSortedList.concat(arrayToShuffule);
+	 <!-- To get Run-time and Memory Consumption details -->  
+startSorting = window.performance.now();
+newSortedList = insertion(newArrayToSort, isRealTime, sortLabel);
+endSorting = window.performance.now();
+showSortedness = false;	
+}
+
+<!-- Calculating Run-time by subtracting start time and endtime of the Sorting -->  
+let timeTaken = endSorting - startSorting;
+<!-- To display run-time in ms -->  
+document.getElementById("ms").innerHTML = `${timeTaken.toFixed(8)}ms`;
+<!-- To display memory utilization -->  
+document.getElementById("mb").innerHTML = `${window.performance.memory.usedJSHeapSize} bytes, ${(window.performance.memory.usedJSHeapSize / (1024*1024))} MB `;
+console.log(window.performance.memory);
+<!-- To dispay new output array -->  
+renderArray("sortedArray", newSortedList);
+
+//totalJSHeapSize
+
+
+
+// console.log("Executed in: "+end);
+//console.log(window.performance);
+//console.log("Total Memory used " + performance.memory.totalJSHeapSize / 1024 /1024 + "MB" + "USed Memory " + performance.memory.usedJSHeapSize/1024/1024+ "MB")
+
+}
+  </script>
+
+</body>
+</html>

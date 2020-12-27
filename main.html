@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>Siddharth Sheth - Sorting Algos</title>
+  
+  <!-- CSS class below -->  
+  <style>
+	*{
+		font-family: arial;  
+	}
+	
+	.sections {
+		margin-top: 5px; 
+	}
+	input[type="button"]:hover {
+		cursor: pointer;
+	} 
+	h3 {
+		text-decoration: underline;
+	}
+	.hide {
+		display: none;
+	}
+	
+	
+
+  </style>
+
+</head>
+<body>
+<!-- partial:index.partial.html -->
+<h4>Masters Seminar in CSS (TCSS 598)</h4>
+<h3>Sorting Algorithms</h3>
+<h4> Developed by: Siddharth Sheth (Student ID #2076180)</h4>
+<h4> Under guidance : Prof: Mohamed Ali </h4>
+<h4> TA : Sreenavya Nrusimhadevara </h4>
+<br />
+
+<h4>Please select an algorithm to play around : </h4>
+<!-- User Input to genearte # of rows of the Synthetic dataset -->
+<!-- <label for="synthethicNums">How many Rows you want to generate? </label> -->
+<!-- <input type="number" id="synthethicNums" /> -->
+
+<!-- Button to generate and sort Numbers dataset -->
+
+<input type="button" value="Insertion Sort" onclick="insertionSort()" />
+
+
+<input type="button" value="Selection Sort" onclick="selectionSort()" />
+
+
+<input type="button" value="Bubble Sort" onclick="bubbleSort()" />
+
+
+<input type="button" value="Merge Sort" onclick="mergeSort()" />
+
+
+<input type="button" value="Quick Sort" onclick="quickSort()" />
+
+<input type="button" value="Performance Analysis" onclick="performAnalysis()" />
+
+
+<script>
+
+	function insertionSort() {
+		window.location.href = '../Code/insertion_sort.html';
+	}
+
+	function selectionSort() {
+		window.location.href = '../Code/selection_sort.html';
+	}
+
+	function bubbleSort() {
+		window.location.href = '../Code/bubble_sort.html';
+	}
+
+	function mergeSort() {
+		window.location.href = '../Code/merge_sort.html';
+	}
+
+	function quickSort() {
+		window.location.href = '../Code/quick_sort.html';
+	}	
+	
+	function performAnalysis() {
+		document.querySelector(".hide").style.display = 'block';
+	}
+	
+</script>
+
+<script type='text/javascript' src='https://us-west-2b.online.tableau.com/javascripts/api/viz_v1.js'></script><div class="hide"><div class='tableauPlaceholder' style='width: 1000px; height: 850px; display: none;'><object class='tableauViz' width='1000' height='850' style='display:none;'><param name='host_url' value='https%3A%2F%2Fus-west-2b.online.tableau.com%2F' /> <param name='embed_code_version' value='3' /> <param name='site_root' value='&#47;t&#47;siddharthtableau' /><param name='name' value='SortingAlgos_16069360598410&#47;DS_1' /><param name='tabs' value='yes' /><param name='toolbar' value='yes' /><param name='showAppBanner' value='false' /></object></div></div>
+
+</body>
+</html>
